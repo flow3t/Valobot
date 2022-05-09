@@ -767,24 +767,11 @@ function addVerified(puuid, user, rank) {
 }
 
 function removeRoles(msg) {
-    let role = msg.guild.roles.cache.find(role => role.name === `Iron`);
+    let roles = [Unrated, Iron, Bronze, Silver, Gold, Platinum, Diamond, Immortal, Radiant]
+    roles.forEach(element => {
+        let role = msg.guild.roles.cache.find(role => role.name === element);
     msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Unrated`);
-    msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Bronze`);
-    msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Silver`);
-    msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Gold`);
-    msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Platinum`);
-    msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Diamond`);
-    msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Immortal`);
-    msg.member.roles.remove(role.id);
-    role = msg.guild.roles.cache.find(role => role.name === `Radiant`);
-    msg.member.roles.remove(role.id);
+    })
 }
 
 function updateVerified(puuid, rank) {
