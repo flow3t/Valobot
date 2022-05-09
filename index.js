@@ -42,87 +42,7 @@ let rep = ''
 
 client.on('messageCreate',
     async function (msg) {
-        if (msg.content.includes("!verify ")) {
-            var data = msg.content.replace(/!verify /g, '');
-            let name = data.split('#')
-            let userID = name[0]
-            let tag = name[1]
-
-            clientDB.connect(err => {
-                const collection = clientDB.db("valo").collection("verified");
-                var query = { user: `${msg.author.id}` }
-                collection.find(query).toArray(function (err, result) {
-                    if (err) throw err;
-                    if (result[0]) {
-                        msg.author.send("You're already verified, try !update if your rank role is not displayed")
-                    }
-                    else {
-                        axios.get(`https://api.henrikdev.xyz/valorant/v3/matches/eu/${userID}/${tag}?force=true`).then((response) => {
-                            arr = response.data.data
-                            let info = arr[1].players.all_players
-                            let info2 = arr[0].players.all_players
-                            info.forEach(element => {
-                                if (element.name === `${userID}`) {
-                                    checkNome = element.character
-                                    info2.forEach(element => {
-                                        if (element.name === `${userID}`) {
-                                            puuid = element.puuid
-                                            check = element.player_card
-                                            rank = element.currenttier_patched.split(' ')[0]
-                                            x = element.character
-                                            axios.get(`https://valorant-api.com/v1/playercards/`).then((res) => {
-                                                let arr = res.data.data
-                                                arr.forEach(element => {
-                                                    if (element.displayName === `VALORANT ${x} Card`) {
-                                                        cc = element.uuid
-                                                    }
-                                                })
-                                                axios.get(`https://valorant-api.com/v1/playercards/${check}`).then((res) => {
-                                                    nome = res.data.data.displayName
-                                                    if (/* nome === `VALORANT ${checkNome} Card` */1 === 1) {
-                                                        axios.get('https://api.henrikdev.xyz/valorant/v2/leaderboard/eu').then((response) => {
-                                                            let leaderboard = response.data.players
-                                                            leaderboard.forEach(element => {
-                                                                if (element.puuid === `${puuid}`) {
-                                                                    if (element.competitiveTier < 24) {
-                                                                        rank = 'Immortal'
-                                                                    } else rank = 'Radiant'
-                                                                    console.log('Rank retrieved through leaderboard')
-                                                                }
-                                                            })
-                                                        })
-                                                        let role = msg.guild.roles.cache.find(role => role.name === `${rank}`);
-                                                        msg.member.roles.add(role.id)
-                                                        msg.author.send(`Verified! Added role ${rank}`)
-                                                        addVerified(puuid, msg.author.id, rank)
-                                                    } else {
-                                                        let Embed = new MessageEmbed()
-                                                            .setTitle(`Authentication not completed`)
-                                                            .setDescription(`Please change your player card to VALORANT ${x} Card, play a game and try again`)
-                                                            .setImage(`https://media.valorant-api.com/playercards/${cc}/largeart.png`)
-                                                        msg.author.send({ embeds: [Embed] });
-
-                                                    }
-                                                })
-                                            })
-
-
-                                        }
-                                    });
-
-                                }
-                            });
-
-                        }).catch(error => {
-                            if (error.response.status === 404) msg.reply('User not found.')
-                            else if (error.response.status === 403 || error.response.status === 400) msg.reply('Server error. Please try again later.')
-                            else console.log(error)
-                        })
-                    }
-                })
-            })
-            msg.delete()
-        }
+        if (msg.content.includes("!verify ")) verifyMe(msg) 
         else if (msg.content.includes("!last <@")) getLastMention(msg)
         else if (msg.content.includes("!last ")) getLast(msg)
         else if (msg.content.includes("!last")) getLastV(msg)
@@ -320,6 +240,88 @@ client.on('messageCreate',
         }
     })
 
+function verifyMe(msg) {
+    {
+            var data = msg.content.replace(/!verify /g, '');
+            let name = data.split('#')
+            let userID = name[0]
+            let tag = name[1]
+
+            clientDB.connect(err => {
+                const collection = clientDB.db("valo").collection("verified");
+                var query = { user: `${msg.author.id}` }
+                collection.find(query).toArray(function (err, result) {
+                    if (err) throw err;
+                    if (result[0]) {
+                        msg.author.send("You're already verified, try !update if your rank role is not displayed")
+                    }
+                    else {
+                        axios.get(`https://api.henrikdev.xyz/valorant/v3/matches/eu/${userID}/${tag}?force=true`).then((response) => {
+                            arr = response.data.data
+                            let info = arr[1].players.all_players
+                            let info2 = arr[0].players.all_players
+                            info.forEach(element => {
+                                if (element.name === `${userID}`) {
+                                    checkNome = element.character
+                                    info2.forEach(element => {
+                                        if (element.name === `${userID}`) {
+                                            puuid = element.puuid
+                                            check = element.player_card
+                                            rank = element.currenttier_patched.split(' ')[0]
+                                            x = element.character
+                                            axios.get(`https://valorant-api.com/v1/playercards/`).then((res) => {
+                                                let arr = res.data.data
+                                                arr.forEach(element => {
+                                                    if (element.displayName === `VALORANT ${x} Card`) {
+                                                        cc = element.uuid
+                                                    }
+                                                })
+                                                axios.get(`https://valorant-api.com/v1/playercards/${check}`).then((res) => {
+                                                    nome = res.data.data.displayName
+                                                    if (/* nome === `VALORANT ${checkNome} Card` */1 === 1) {
+                                                        axios.get('https://api.henrikdev.xyz/valorant/v2/leaderboard/eu').then((response) => {
+                                                            let leaderboard = response.data.players
+                                                            leaderboard.forEach(element => {
+                                                                if (element.puuid === `${puuid}`) {
+                                                                    if (element.competitiveTier < 24) {
+                                                                        rank = 'Immortal'
+                                                                    } else rank = 'Radiant'
+                                                                    console.log('Rank retrieved through leaderboard')
+                                                                }
+                                                            })
+                                                        })
+                                                        let role = msg.guild.roles.cache.find(role => role.name === `${rank}`);
+                                                        msg.member.roles.add(role.id)
+                                                        msg.author.send(`Verified! Added role ${rank}`)
+                                                        addVerified(puuid, msg.author.id, rank)
+                                                    } else {
+                                                        let Embed = new MessageEmbed()
+                                                            .setTitle(`Authentication not completed`)
+                                                            .setDescription(`Please change your player card to VALORANT ${x} Card, play a game and try again`)
+                                                            .setImage(`https://media.valorant-api.com/playercards/${cc}/largeart.png`)
+                                                        msg.author.send({ embeds: [Embed] });
+
+                                                    }
+                                                })
+                                            })
+
+
+                                        }
+                                    });
+
+                                }
+                            });
+
+                        }).catch(error => {
+                            if (error.response.status === 404) msg.reply('User not found.')
+                            else if (error.response.status === 403 || error.response.status === 400) msg.reply('Server error. Please try again later.')
+                            else console.log(error)
+                        })
+                    }
+                })
+            })
+            msg.delete()
+        }
 function getLastV(msg) {
 
     userd = msg.author.id
