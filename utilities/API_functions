@@ -1,0 +1,45 @@
+const VAPI = require("unofficial-valorant-api")
+require('dotenv').config()
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const { default: axios } = require("axios");
+const uri = process.env.MONGODB_URI
+//const clientDB = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
+module.exports = {
+    getWithPuuid: async function (region, puuid) {
+        let matches = await axios.get(`https://api.henrikdev.xyz/valorant/v1/by-puuid/mmr-history/${region}/${puuid}`).then((response) => {
+            return response
+        }).catch((err) => {
+            console.log(err)
+        })
+        return matches.data
+    },
+
+    getLastMatches: async function (name, tag) {
+        let match = await axios.get(`https://api.henrikdev.xyz/valorant/v3/matches/eu/${name}/${tag}?force=true`).then((response) => {
+            return response
+        }).catch((err) => {
+            console.log(err)
+        })
+        return match.data.data
+    },
+
+
+
+    getPuuidFromDB: async function (userd) {
+        const clientDB = await MongoClient.connect(uri, { useNewUrlParser: true })
+            .catch(err => {
+                console.log(err)
+            })
+        let collection = clientDB.db("valo").collection("verified");
+        var query = { user: `${userd}` }
+        let res = await collection.findOne(query)
+        return res.puuid
+    }
+
+}
+
+
+
+

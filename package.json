@@ -16,6 +16,7 @@
     "express": "^4.18.0",
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
-    "mongodb": "^4.5.0"
+    "mongodb": "^4.5.0",
+    "unofficial-valorant-api": "^1.0.4"
   }
 }
